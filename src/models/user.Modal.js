@@ -1,34 +1,45 @@
 import { Schema, model } from "mongoose";
 
-const UserSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
+const UserSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: Number,
+      required: true,
+    },
+    email: {
+      type: String,
+      lowercase: true,
+    },
+
+    selectYourService: {
+      type: [String],
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
+    confirmPassword: {
+      type: String,
+      required: true,
+      select: false,
+    },
+    token: {
+      type: String,
+      select: false,
+    },
   },
-  phoneNumber: {
-    type: Number,
-    required: true,
-  },
-  email: {
-    type: String,
-  },
-  selectYourService: {
-    type: [String],
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  confirmPassword: {
-    type: String,
-    required: true,
-  },
-},{timestamps:true,versionKey:false});
+  { timestamps: true, versionKey: false }
+);
 
 const UserModal = model("UserModal", UserSchema);
 
