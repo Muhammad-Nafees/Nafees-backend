@@ -1,12 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectionDB from "./db/index.js";
+import app from "./app.js";
 
-dotenv.config({path:".env"});
-const app = express();
-const PORT = process.env.PORT || 3000;
-connectionDB();
+dotenv.config({ path: ".env" });
 
-app.listen(PORT, () => {
-  console.log(`https://localhost:${PORT}`);
+connectionDB()
+  .then(() => {
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`https://localhost:${process.env.PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
 });
