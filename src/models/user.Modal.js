@@ -14,7 +14,6 @@ const UserSchema = new Schema(
       type: String,
       lowercase: true,
     },
-
     selectYourService: {
       type: [String],
       required: true,
@@ -42,5 +41,10 @@ const UserSchema = new Schema(
 );
 
 const UserModal = model("UserModal", UserSchema);
+
+UserSchema.pre("save", function (next) {
+  console.log("pre save fired!");
+  return next();
+});
 
 export { UserModal };
