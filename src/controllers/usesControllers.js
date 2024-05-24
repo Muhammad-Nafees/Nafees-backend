@@ -2,6 +2,7 @@ import { UserModal } from "../models/user.Modal.js";
 import { parseBody, tokenGenerate } from "../utils/index.js";
 import { compare, hash } from "bcrypt";
 import { registerSchema } from "../validations/authValidation.js";
+import { STATUS_CODES } from "../constants.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -20,11 +21,12 @@ export const registerUser = async (req, res, next) => {
     const savedUser = await user.save();
 
     // Send a success response
-    res.status(201).json({
+    res.status(STATUS_CODES.CREATED).json({
       message: "User registered successfully",
       user: savedUser,
       token: accessToken,
     });
+
   } catch (error) {
     // Handle any errors
     console.error("Error while registering user:", error);
