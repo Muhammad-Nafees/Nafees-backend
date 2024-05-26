@@ -7,8 +7,7 @@ export const registerSchema = Joi.object({
   selectYourService: Joi.array().required(),
   address: Joi.string().required(),
   password: Joi.string().min(6).required(),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref("password"))
+  confirmPassword: Joi.string().valid(Joi.ref("password"))
     .required()
     .error(() => {
       return {

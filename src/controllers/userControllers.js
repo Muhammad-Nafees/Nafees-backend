@@ -1,6 +1,6 @@
 import { UserModal } from "../models/user.Modal.js";
 import { parseBody, tokenGenerate } from "../utils/index.js";
-import { compare, hash } from "bcrypt";
+import  bcrypt,{ compare, hash } from "bcrypt";
 import { registerSchema } from "../validations/authValidation.js";
 import { STATUS_CODES } from "../constants.js";
 
@@ -8,15 +8,29 @@ export const registerUser = async (req, res, next) => {
   try {
     const body = parseBody(req.body);
     await registerSchema.validateAsync(body);
-    console.log("🚀 ~ registerUser ~ body:", body);
-    // Create a new instance of UserModal with user data
-    const user = new UserModal(body);
-    const accessToken = tokenGenerate(user?._id);
+    const {phoneNumber,password,} = body;
 
-    // const hashedPassword = await hash(body.password, 10);
-    // user.password = hashedPassword;
+    // console.log("🚀 ~ registerUser ~ body:", body);
+
+    // Create a new instance of UserModal with user data
+
+    const phoneNumberRegister = await UserModal.findOne({phoneNumber});
+    const passwordLoginRegister = await UserModal.findOne({password});
+
+    if (phoneNumberRegister && passwordLoginRegister) {
+      return res.send({
+        message: "Both password and phoneNumber already exist",
+      });
+    } else if (phoneNumberRegister) {
+      return res.send({ message: "phone Number already Exist" });
+    } else if (passwordLoginRegister) {
+      return res.send({ message: "password Already Exist" });
+    }
+
     // console.log("🚀 ~ registerUser ~ hashedPassword:", hashedPassword);
 
+    const accessToken = tokenGenerate(body?._id);
+    const user = new UserModal(body);
     const savedUser = await user.save();
 
     // Send a success response
@@ -33,7 +47,7 @@ export const registerUser = async (req, res, next) => {
         error.details[0].message
       );
       return res.status(400).json({ error: error.details[0].message });
-    }
+    };
 
     // Handle any other errors
     console.error("Error while registering user:", error);
@@ -46,29 +60,37 @@ export const registerUser = async (req, res, next) => {
 export const login = async (req, res, next) => {
   const body = parseBody(req.body);
   const { phoneNumber, password } = body;
-  console.log("🚀 ~ login ~ body:", body);
 
   try {
-    const phoneNumberlogin = await UserModal.findOne({ phoneNumber });
-    const passwordLogin = await UserModal.findOne({ password });
-    console.log("🚀 ~ login ~ phoneNumber:", phoneNumberlogin);
+    
+    if (!phoneNumber || !password) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ message: "Phone number and password are required" });
+    }
+    
+    const user = await UserModal.findOne({ phoneNumber });
+    // const passwordDB = await UserModal.findOne({ password });
+    if (!user) {
+      return res.status(STATUS_CODES.FORBIDDEN).json({ message: "Invalid Credentials" });
+    };
 
-    if (!phoneNumberlogin || !passwordLogin)
+    // Compare provided password with stored hashed password
+    
+     const isMatch = await compare(password, user.password);
+    console.log("🚀 ~ login ~ provided password:", password);
+    console.log("🚀 ~ login ~ stored hashed password:", user.password);
+// console.log("🚀 ~ login ~ isMatch:", isMatch);
+    
+    if (!isMatch) {
       return res
-        .status(STATUS_CODES.FORBIDDEN)
-        .json({ message: "Invalid Credientials" });
-
-    // const isMatch = await compare(password, passwordLogin.password);
-    const token = tokenGenerate(phoneNumberlogin._id);
-    // if (!isMatch) {
-    //   return res
-    //     .status(STATUS_CODES.FORBIDDEN)
-    //     .json({ message: "Invalid Credentials matching" });
-    // }
+      .status(STATUS_CODES.FORBIDDEN)
+      .json({ message: "Invalid Credentials" });
+    }
+    
+    const token = tokenGenerate(user._id);
 
     return res.status(STATUS_CODES.SUCCESS).json({
       message: "Login SuccessFull",
-      user: passwordLogin,
+      user: user,
       token: token,
     });
   } catch (error) {

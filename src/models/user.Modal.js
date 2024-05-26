@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new Schema(
   {
@@ -25,12 +26,12 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
-      select: false,
+    //   select: false,
     },
     confirmPassword: {
       type: String,
       required: true,
-      select: false,
+    //   select: false,
     },
     token: {
       type: String,
@@ -40,11 +41,14 @@ const UserSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-const UserModal = model("UserModal", UserSchema);
-
-UserSchema.pre("save", function (next) {
-  console.log("pre save fired!");
-  return next();
+UserSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 12);
+    this.confirmPassword = await bcrypt.hash(this.password, 12);
+  }
+  next();
 });
+
+const UserModal = model("UserModal", UserSchema);
 
 export { UserModal };
