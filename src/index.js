@@ -14,3 +14,7 @@ connectionDB()
   .catch((error) => {
     console.log(error);
 });
+
+// app.get("/",(req,res)=>{
+//    res.json({message:"Wellcome Nafees Backend"})
+// });

@@ -8,7 +8,7 @@ const UserSchema = new Schema(
       required: true,
     },
     phoneNumber: {
-      type: Number,
+      type: String,
       required: true,
     },
     email: {
@@ -26,12 +26,12 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true,
-    //   select: false,
+      //   select: false,
     },
     confirmPassword: {
       type: String,
       required: true,
-    //   select: false,
+      //   select: false,
     },
     token: {
       type: String,
@@ -41,13 +41,6 @@ const UserSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-UserSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 12);
-    this.confirmPassword = await bcrypt.hash(this.password, 12);
-  }
-  next();
-});
 
 const UserModal = model("UserModal", UserSchema);
 
