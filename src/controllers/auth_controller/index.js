@@ -1,8 +1,8 @@
-import { UserModal } from "../models/user.Modal.js";
-import { parseBody, tokenGenerate } from "../utils/index.js";
+import { UserModal } from "../../models/user.Modal.js";
+import { parseBody, tokenGenerate } from "../../utils/index.js";
 import bcrypt from "bcrypt";
-import { registerSchema } from "../validations/authValidation.js";
-import { STATUS_CODES } from "../constants.js";
+import { registerSchema } from "../../validations/authValidation.js";
+import { STATUS_CODES } from "../../constants.js";
 
 // Hashing password
 const SALT_ROUNDS = 10;
