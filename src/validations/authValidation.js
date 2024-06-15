@@ -4,7 +4,6 @@ export const registerSchema = Joi.object({
   username: Joi.string().required(),
   phoneNumber: Joi.number().required(),
   email: Joi.string().email().required(),
-  selectYourService: Joi.array().required(),
   address: Joi.string().required(),
   password: Joi.string().min(6).required(),
   confirmPassword: Joi.string().valid(Joi.ref("password"))
