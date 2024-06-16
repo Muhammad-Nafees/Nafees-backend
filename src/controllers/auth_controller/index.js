@@ -1,9 +1,7 @@
 import { UserModal } from "../../models/user.Modal.js";
 import { parseBody, tokenGenerate } from "../../utils/index.js";
-import bcrypt from "bcrypt";
 import { registerSchema } from "../../validations/authValidation.js";
 import { STATUS_CODES } from "../../constants.js";
-
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -11,9 +9,9 @@ export const registerUser = async (req, res, next) => {
     await registerSchema.validateAsync(body);
     const { phoneNumber, password } = body;
 
-    const phoneNumberRegister = await UserModal.findOne({ phoneNumber });
-    const passwordRegister = await UserModal.findOne({ password });
-
+    const phoneNumberRegister = await UserModal.findOne({ phoneNumber:phoneNumber });
+    console.log("🚀 ~ registerUser ~ phoneNumberRegister:", phoneNumberRegister)
+    
     if (phoneNumberRegister && passwordRegister) {
       return res.send({
         message: "Both phone number and password already exist",
@@ -24,14 +22,14 @@ export const registerUser = async (req, res, next) => {
       return res.send({ message: "Password already exists" });
     }
 
-    const user = new UserModal({ ...body, });
+    const user = new UserModal({ ...body });
     const savedUser = await user.save();
 
     // const accessToken = tokenGenerate(savedUser._id);
 
-    const accessToken = await user.generateAccessToken(savedUser._id)
-   const isPasswordCorrect= await user.isPasswordCorrect(password)
-   console.log("🚀 ~ registerUser ~ isPasswordCorrect:", isPasswordCorrect)
+    const accessToken = await user.generateAccessToken(savedUser._id);
+    // const isPasswordCorrect = await user.isPasswordCorrect(password);
+    // console.log("🚀 ~ registerUser ~ isPasswordCorrect:", isPasswordCorrect);
 
     res.status(STATUS_CODES.CREATED).json({
       message: "User registered successfully",
@@ -70,14 +68,13 @@ export const login = async (req, res, next) => {
         .json({ message: "Invalid Credentials" });
     }
 
-
     if (!isMatch) {
       return res
         .status(STATUS_CODES.FORBIDDEN)
         .json({ message: "Invalid Credentials" });
     }
 
-    const accessToken = await user.generateAccessToken(user._id)
+    const accessToken = await user.generateAccessToken(user._id);
 
     return res.status(STATUS_CODES.SUCCESS).json({
       message: "Login Successful",

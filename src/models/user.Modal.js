@@ -42,13 +42,12 @@ UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   this.confirmPassword = await bcrypt.hash(this.password, 10);
-  console.log("🚀 ~ password:", this.password)
+  console.log("🚀 ~ password:", this.password);
   next();
 });
 
 UserSchema.methods.isPasswordCorrect = async function (password) {
-  const bcryptPwd =  await bcrypt.compare(password, this.password);
-  console.log("🚀 ~ bcryptPwd:", bcryptPwd)
+  const bcryptPwd = await bcrypt.compare(password, this.password);
   return bcryptPwd;
 };
 
@@ -56,8 +55,8 @@ UserSchema.methods.generateAccessToken = async function (userId) {
   const token = jwt.sign({ user_id: userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.EXPIRYJWT,
   });
-  console.log("🚀 ~ token:", token)
-  console.log("🚀 ~ userId generateAccessToken:", userId)
+  console.log("🚀 ~ token:", token);
+  console.log("🚀 ~ userId generateAccessToken:", userId);
   return token;
 };
 
