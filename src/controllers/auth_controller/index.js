@@ -9,27 +9,26 @@ export const registerUser = async (req, res, next) => {
     await registerSchema.validateAsync(body);
     const { phoneNumber, password } = body;
 
-    const phoneNumberRegister = await UserModal.findOne({ phoneNumber:phoneNumber });
-    console.log("🚀 ~ registerUser ~ phoneNumberRegister:", phoneNumberRegister)
-    
-    if (phoneNumberRegister && passwordRegister) {
-      return res.send({
-        message: "Both phone number and password already exist",
-      });
-    } else if (phoneNumberRegister) {
-      return res.send({ message: "Phone number already exists" });
-    } else if (passwordRegister) {
-      return res.send({ message: "Password already exists" });
+    // Check if phone number exists
+    const users = await UserModal.find({ phoneNumber });
+    console.log("🚀 ~ registerUser ~ users:", users);
+
+    for (let user of users) {
+      console.log("USER______:", user);
+      const isPasswordMatch = await user.isPasswordCorrect(password);
+      console.log("🚀 ~ registerUser ~ isPasswordMatch:", isPasswordMatch)
+     
+       if(isPasswordMatch){
+        return res.status(400).json({ message: "password already exists" });
+       }
+       
     }
 
-    const user = new UserModal({ ...body });
+    // Create new user
+    const user = new UserModal(body);
     const savedUser = await user.save();
 
-    // const accessToken = tokenGenerate(savedUser._id);
-
-    const accessToken = await user.generateAccessToken(savedUser._id);
-    // const isPasswordCorrect = await user.isPasswordCorrect(password);
-    // console.log("🚀 ~ registerUser ~ isPasswordCorrect:", isPasswordCorrect);
+    const accessToken = tokenGenerate(savedUser._id);
 
     res.status(STATUS_CODES.CREATED).json({
       message: "User registered successfully",
