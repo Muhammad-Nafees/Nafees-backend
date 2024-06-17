@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 
 const UserSchema = new Schema(
   {
@@ -38,21 +37,26 @@ const UserSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  this.confirmPassword = await bcrypt.hash(this.password, 10);
-  console.log("🚀 ~ password:", this.password);
-  next();
-});
+// UserSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) return next();
+//   this.password = await bcrypt.hash(this.password, 10);
+//   this.confirmPassword = await bcrypt.hash(this.password, 10);
+//   console.log("🚀 ~ password:", this.password);
+//   next();
+// });
 
-UserSchema.methods.isPasswordCorrect = async function (password) {
-  try {
-    const bcryptPwd = await bcrypt.compare(password, this.password);
-    return bcryptPwd;
-  } catch (error) {
-    next(error)
-  }
+// UserSchema.methods.isPasswordCorrect = async function (password) {
+//   try {
+//     const bcryptPwd = await bcrypt.compare(password, this.password);
+//     return bcryptPwd;
+//   } catch (error) {
+//     next(error)
+//   }
+// };
+
+export const findUser = (query) => {
+  console.log("🚀 ~ findUser ~ query:", query)
+ return UserModal.findOne({...query})
 };
 
 UserSchema.methods.generateAccessToken = async function (userId) {
@@ -64,7 +68,7 @@ UserSchema.methods.generateAccessToken = async function (userId) {
   return token;
 };
 
-UserSchema.methods.generateRefreshToken = async function (password) {};
+ UserSchema.methods.generateRefreshToken = async function (password) {};
 
 const UserModal = model("UserModal", UserSchema);
 

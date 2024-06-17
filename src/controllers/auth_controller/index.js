@@ -2,6 +2,7 @@ import { UserModal } from "../../models/user.Modal.js";
 import { parseBody, tokenGenerate } from "../../utils/index.js";
 import { registerSchema } from "../../validations/authValidation.js";
 import { STATUS_CODES } from "../../constants.js";
+import { findUser } from "../../models/user.Modal.js";
 
 export const registerUser = async (req, res, next) => {
   try {
@@ -10,25 +11,23 @@ export const registerUser = async (req, res, next) => {
     const { phoneNumber, password } = body;
 
     // Check if phone number exists
-    const users = await UserModal.find({ phoneNumber });
-    console.log("🚀 ~ registerUser ~ users:", users);
-
-    for (let user of users) {
-      console.log("USER______:", user);
-      const isPasswordMatch = await user.isPasswordCorrect(password);
-      console.log("🚀 ~ registerUser ~ isPasswordMatch:", isPasswordMatch)
-     
-       if(isPasswordMatch){
-        return res.status(400).json({ message: "password already exists" });
-       }
-       
+    const users = await findUser({ phoneNumber: phoneNumber });
+    const existingPassword = await findUser({ password: password });
+    if (users && existingPassword) {
+      return res
+        .status(400)
+        .json({ message: "Both phone number and password already exists" });
+    } else if (users) {
+      return res.status(400).json({ message: "Phone Number Already exists" });
+    } else if (existingPassword) {
+      return res.status(400).json({ message: "Password Already exists" });
     }
+    const accessToken = tokenGenerate(savedUser._id);
 
     // Create new user
     const user = new UserModal(body);
     const savedUser = await user.save();
 
-    const accessToken = tokenGenerate(savedUser._id);
 
     res.status(STATUS_CODES.CREATED).json({
       message: "User registered successfully",
@@ -60,7 +59,9 @@ export const login = async (req, res, next) => {
         .json({ message: "Phone number and password are required" });
     }
 
-    const user = await UserModal.findOne({ phoneNumber });
+    const user = await findUser({ phoneNumber });
+    const isMatch = await findUser({ password });
+
     if (!user) {
       return res
         .status(STATUS_CODES.FORBIDDEN)
