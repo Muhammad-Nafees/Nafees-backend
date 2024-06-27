@@ -22,8 +22,8 @@ export const registerUser = async (req, res, next) => {
     } else if (existingPassword) {
       return res.status(400).json({ message: "Password Already exists" });
     }
-    const accessToken = tokenGenerate(savedUser._id);
 
+    const accessToken = tokenGenerate(savedUser._id);
     // Create new user
     const user = new UserModal(body);
     const savedUser = await user.save();
@@ -86,6 +86,13 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
+export const forget = async(req,res,next) =>{
+  const body = parseBody(req.body);
+  const { phoneNumber, password } = body;
+}
+
+
 
 export const deletaAll = async (req, res) => {
   try {
