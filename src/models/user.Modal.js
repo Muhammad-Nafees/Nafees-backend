@@ -33,6 +33,7 @@ const UserSchema = new Schema(
       type: String,
       select: false,
     },
+   
   },
   { timestamps: true, versionKey: false }
 );
@@ -55,8 +56,8 @@ const UserSchema = new Schema(
 // };
 
 export const findUser = (query) => {
-  console.log("🚀 ~ findUser ~ query:", query)
- return UserModal.findOne({...query})
+  console.log("🚀 ~ findUser ~ query:", query);
+  return UserModal.findOne({ ...query });
 };
 
 UserSchema.methods.generateAccessToken = async function (userId) {
@@ -68,7 +69,7 @@ UserSchema.methods.generateAccessToken = async function (userId) {
   return token;
 };
 
- UserSchema.methods.generateRefreshToken = async function (password) {};
+UserSchema.methods.generateRefreshToken = async function (password) {};
 
 const UserModal = model("UserModal", UserSchema);
 
