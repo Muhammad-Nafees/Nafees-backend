@@ -15,7 +15,7 @@ router.post("/upload", upload.single("image"), async (req, res) => {
   try {
     // Upload image to Cloudinary
     const imageResult = await new Image_Upload_Modal({ image });
-    console.log("🚀 ~ router.post ~ imageResult:", imageResult);
+    // console.log("🚀 ~ router.post ~ imageResult:", imageResult);
 
     if (!req.file) {
       throw new Error("No file uploaded");
