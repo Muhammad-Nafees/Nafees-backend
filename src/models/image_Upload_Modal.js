@@ -6,6 +6,6 @@ const image_upload_Schema = Schema({
   },
 });
 
-const UserModal = model("image_upload_Schema", image_upload_Schema);
+const Image_Upload_Modal = model("image_upload_Schema", image_upload_Schema);
 
-export { UserModal };
+export { Image_Upload_Modal };

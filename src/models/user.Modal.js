@@ -33,7 +33,6 @@ const UserSchema = new Schema(
       type: String,
       select: false,
     },
-   
   },
   { timestamps: true, versionKey: false }
 );

@@ -5,9 +5,10 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.any.API_SECRET, // Click 'View Credentials' below to copy your API secret
 });
-console.log("🚀 ~ API_KEY:", API_KEY);
-console.log("🚀 ~ CLOUD_NAME:", CLOUD_NAME);
-console.log("🚀 ~ API_SECRET:", API_SECRET);
+
+console.log("🚀 ~ API_KEY:", process.env.API_KEY);
+console.log("🚀 ~ CLOUD_NAME:", process.env.CLOUD_NAME);
+console.log("🚀 ~ API_SECRET:", process.env.API_SECRET);
 
 // export {cloudinary}
 
